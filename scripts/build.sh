@@ -17,8 +17,11 @@ if command -v pg_config >/dev/null 2>&1; then
     echo "PostgreSQL development files found, building with database support"
     cmake ..
 else
-    echo "PostgreSQL development files not found, building with mock database"
-    cmake -DUSE_POSTGRES=OFF ..
+    echo "PostgreSQL development files not found. Please install PostgreSQL development files."
+    echo "On Ubuntu/Debian: sudo apt-get install libpq-dev"
+    echo "On Fedora/RHEL: sudo dnf install postgresql-devel"
+    echo "On macOS: brew install postgresql"
+    exit 1
 fi
 
 echo "Building..."

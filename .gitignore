@@ -1,6 +1,38 @@
+# Build directories
 build/
+dist/
+*.egg-info/
+
+# Compiled files
 *.o
+*.so
+*.a
 *.pyc
 __pycache__/
+*.dll
+*.exe
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+venv/
+env/
+.env
+
+# Logs
+*.log
+
+# Database
 *.db
+*.sqlite3
+
+# Generated files
 *.pdf
+
+# OS specific
+.DS_Store
+Thumbs.db

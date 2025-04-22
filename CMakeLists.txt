@@ -5,7 +5,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Find dependencies
-option(USE_POSTGRES "Use PostgreSQL database" ON)
 option(BUILD_TESTS "Build tests" ON)
 
 # Find Python
@@ -23,17 +22,9 @@ if(NOT pybind11_FOUND)
     FetchContent_MakeAvailable(pybind11)
 endif()
 
-# Find PostgreSQL if enabled
-if(USE_POSTGRES)
-    find_package(PostgreSQL QUIET)
-    if(PostgreSQL_FOUND)
-        add_definitions(-DUSE_POSTGRES)
-        message(STATUS "PostgreSQL found, building with database support")
-    else()
-        message(WARNING "PostgreSQL not found, building without database support")
-        set(USE_POSTGRES OFF)
-    endif()
-endif()
+# Find PostgreSQL (required)
+find_package(PostgreSQL REQUIRED)
+message(STATUS "PostgreSQL found: ${PostgreSQL_VERSION}")
 
 # Find Catch2 for testing if tests are enabled
 if(BUILD_TESTS)
@@ -50,9 +41,7 @@ if(BUILD_TESTS)
 endif()
 
 # Include directories
-if(PostgreSQL_FOUND)
-    include_directories(${PostgreSQL_INCLUDE_DIRS})
-endif()
+include_directories(${PostgreSQL_INCLUDE_DIRS})
 include_directories(${Python3_INCLUDE_DIRS})
 include_directories(src/backend)
 

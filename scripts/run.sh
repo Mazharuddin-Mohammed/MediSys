@@ -23,7 +23,8 @@ export DB_HOST=${DB_HOST:-localhost}
 if command -v pg_isready >/dev/null 2>&1 && pg_isready -h $DB_HOST -U $DB_USER > /dev/null 2>&1; then
     echo "PostgreSQL is running. Starting MediSys with database: $DB_NAME on $DB_HOST"
 else
-    echo "PostgreSQL is not available. Starting MediSys with mock database."
+    echo "PostgreSQL is not available. Please start PostgreSQL before running MediSys."
+    exit 1
 fi
 
 # Start backend
