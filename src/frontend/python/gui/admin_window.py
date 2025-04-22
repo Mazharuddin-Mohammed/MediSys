@@ -14,7 +14,7 @@ class AdminWindow(QMainWindow):
 
         # Banner
         banner_label = QLabel()
-        banner_pixmap = QPixmap("resources/images/medisys_banner.png")
+        banner_pixmap = QPixmap("src/frontend/python/resources/images/banner.jpg")
         banner_label.setPixmap(banner_pixmap.scaledToWidth(800, Qt.SmoothTransformation))
         banner_label.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(banner_label)

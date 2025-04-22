@@ -1,9 +1,28 @@
 import sys
+import os
 import uuid
+
 from PySide6.QtWidgets import QApplication
-from PySide6.QtGui import QVulkanInstance, QIcon
+from PySide6.QtGui import QIcon
+# Add the current directory to the Python path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+# Now we can import our modules
 from gui.login_window import LoginWindow
-import medisys_bindings
+
+# Try to import medisys_bindings from different locations
+try:
+    import medisys_bindings
+except ImportError:
+    # Try to import from the build directory
+    build_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "build"))
+    sys.path.insert(0, build_dir)
+    try:
+        import medisys_bindings
+    except ImportError:
+        print("Error: Could not import medisys_bindings module.")
+        print("Python path:", sys.path)
+        sys.exit(1)
 
 def main():
     app = QApplication(sys.argv)
@@ -11,12 +30,7 @@ def main():
     # Set application icon
     app.setWindowIcon(QIcon("src/frontend/python/resources/images/logo.jpg"))
 
-    # Initialize Vulkan
-    vulkan_instance = QVulkanInstance()
-    if not vulkan_instance.create():
-        print("Failed to initialize Vulkan")
-        sys.exit(1)
-    app.setVulkanInstance(vulkan_instance)
+    # Vulkan initialization removed - using default rendering
 
     # Load stylesheet
     with open("src/frontend/python/resources/styles/theme.qss", "r") as f:

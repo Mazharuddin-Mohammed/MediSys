@@ -1,8 +1,30 @@
+import sys
+import uuid
+
 from PySide6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLineEdit, QPushButton, QLabel, QHBoxLayout
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
-import uuid
-import medisys_bindings
+import os
+import sys
+
+# Try to import medisys_bindings from different locations
+try:
+    import medisys_bindings
+except ImportError:
+    # Try to import from the parent directory
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    try:
+        import medisys_bindings
+    except ImportError:
+        # Try to import from the build directory
+        build_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), "build"))
+        sys.path.insert(0, build_dir)
+        try:
+            import medisys_bindings
+        except ImportError:
+            print("Error: Could not import medisys_bindings module.")
+            print("Python path:", sys.path)
+            sys.exit(1)
 
 class LoginWindow(QMainWindow):
     def __init__(self, db):
