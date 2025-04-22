@@ -4,12 +4,12 @@
 #include <iomanip>
 
 PatientService::PatientService(std::shared_ptr<DBManager> db) : db_manager(db) {
-    auto& conn = db_manager->getConnection();
-    conn.prepare("insert_patient",
+    // Use the DBManager's safelyPrepare method to avoid duplicate prepared statements
+    db_manager->safelyPrepare("insert_patient",
         "INSERT INTO patients (first_name, last_name, dob, gender, address, mobile, email, "
         "emergency_contact_name, emergency_contact_mobile) "
         "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id");
-    conn.prepare("select_patient",
+    db_manager->safelyPrepare("select_patient",
         "SELECT id, first_name, last_name, dob, gender, address, mobile, email, "
         "emergency_contact_name, emergency_contact_mobile "
         "FROM patients WHERE id = $1");
