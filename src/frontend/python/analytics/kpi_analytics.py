@@ -14,7 +14,7 @@ class KPIAnalytics:
         WHERE doctor_id = %s AND metric_date BETWEEN %s AND %s
         ORDER BY metric_date
         """
-        conn = self.db.getConnection()
+        conn = self.db.get_connection()
         df = pd.read_sql_query(query, conn, params=(doctor_id, start_date, end_date))
         return df
 
@@ -43,7 +43,7 @@ class KPIAnalytics:
         WHERE department_id = %s AND metric_date BETWEEN %s AND %s
         ORDER BY metric_date
         """
-        conn = self.db.getConnection()
+        conn = self.db.get_connection()
         df = pd.read_sql_query(query, conn, params=(department_id, start_date, end_date))
         return df
 

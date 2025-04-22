@@ -8,7 +8,7 @@ def generate_invoice(patient_name, transaction_id, amount, description, output_p
     width, height = letter
 
     # Add banner
-    c.drawImage("resources/images/medisys_banner.png", 0.5 * inch, height - 1.5 * inch, width=7 * inch, height=1 * inch)
+    c.drawImage("src/frontend/python/resources/images/banner.jpg", 0.5 * inch, height - 1.5 * inch, width=7 * inch, height=1 * inch)
 
     # Invoice details
     c.setFont("Helvetica", 12)

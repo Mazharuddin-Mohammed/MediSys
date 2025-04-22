@@ -14,7 +14,7 @@ class MedicalAnalytics:
         WHERE patient_id = %s AND metric_date BETWEEN %s AND %s
         ORDER BY metric_date
         """
-        conn = self.db.getConnection()
+        conn = self.db.get_connection()
         df = pd.read_sql_query(query, conn, params=(patient_id, start_date, end_date))
         return df
 
