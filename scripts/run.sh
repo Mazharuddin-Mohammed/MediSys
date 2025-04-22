@@ -35,13 +35,18 @@ BACKEND_PID=$!
 # Start frontend
 echo "Starting frontend..."
 
+# Set PYTHONPATH to include the build directory
+export PYTHONPATH="$PWD:$PYTHONPATH"
+
 # Check if PySide6 is available
 if python3 -c "import PySide6" 2>/dev/null; then
     echo "PySide6 is available, starting full GUI frontend"
-    python3 ../src/frontend/python/main.py
+    cd ..
+    python3 src/frontend/python/main.py
 else
     echo "PySide6 is not available, starting simple frontend"
-    python3 ../src/frontend/python/simple_main.py
+    cd ..
+    python3 src/frontend/python/simple_main.py
 fi
 
 # Cleanup backend process when frontend exits
