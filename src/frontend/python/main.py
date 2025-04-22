@@ -24,14 +24,23 @@ def main():
 
     # Initialize database using environment variables or defaults
     import os
-    db_name = os.environ.get('DB_NAME', 'medisys')
-    db_user = os.environ.get('DB_USER', 'postgres')
-    db_pass = os.environ.get('DB_PASS', 'secret')
-    db_host = os.environ.get('DB_HOST', 'localhost')
 
-    conn_str = f"dbname={db_name} user={db_user} password={db_pass} host={db_host}"
-    db = medisys_bindings.DBManager(conn_str)
-    db.initialize_schema()
+    try:
+        # Try to connect to the database
+        db_name = os.environ.get('DB_NAME', 'medisys')
+        db_user = os.environ.get('DB_USER', 'postgres')
+        db_pass = os.environ.get('DB_PASS', 'secret')
+        db_host = os.environ.get('DB_HOST', 'localhost')
+
+        conn_str = f"dbname={db_name} user={db_user} password={db_pass} host={db_host}"
+        print(f"Connecting to database: {conn_str}")
+        db = medisys_bindings.DBManager(conn_str)
+        db.initialize_schema()
+        print("Database initialized successfully")
+    except Exception as e:
+        print(f"Warning: Database connection failed: {e}")
+        print("Using mock database instead")
+        db = medisys_bindings.DBManager("mock")
 
     # Show login window
     login_window = LoginWindow(db)

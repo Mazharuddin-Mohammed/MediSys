@@ -11,7 +11,15 @@ cd build
 
 # Configure and build
 echo "Configuring with CMake..."
-cmake ..
+
+# Check if PostgreSQL is available
+if command -v pg_config >/dev/null 2>&1; then
+    echo "PostgreSQL development files found, building with database support"
+    cmake ..
+else
+    echo "PostgreSQL development files not found, building with mock database"
+    cmake -DUSE_POSTGRES=OFF ..
+fi
 
 echo "Building..."
 make -j$(nproc)

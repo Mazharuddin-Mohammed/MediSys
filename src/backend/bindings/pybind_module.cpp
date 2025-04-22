@@ -24,7 +24,8 @@ PYBIND11_MODULE(medisys_bindings, m) {
             try {
                 return self.authenticate(username, password);
             } catch (const std::exception& e) {
-                throw py::runtime_error("Authentication failed");
+                throw py::value_error("Authentication failed");
+                return -1; // This line will never be reached
             }
         });
 

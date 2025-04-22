@@ -58,7 +58,12 @@ class LoginWindow(QMainWindow):
             user_id = auth_service.authenticate(username, password)
             ip_address = "192.168.1.1"  # TODO: Get from network context
             session_id = "session_" + str(uuid.uuid4())
-            self.db.set_audit_context(user_id, ip_address, session_id)
+
+            try:
+                self.db.set_audit_context(user_id, ip_address, session_id)
+            except Exception as audit_error:
+                print(f"Warning: Could not set audit context: {audit_error}")
+
             self.error_label.setText("Login successful")
             self.password_input.clear()
 
@@ -69,5 +74,6 @@ class LoginWindow(QMainWindow):
             self.admin_window.show()
             self.close()
         except Exception as e:
-            self.error_label.setText("Login failed")
+            print(f"Login error: {e}")
+            self.error_label.setText(f"Login failed: {str(e)}")
             self.password_input.clear()
