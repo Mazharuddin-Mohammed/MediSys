@@ -1,5 +1,7 @@
 #include "patient_service.h"
+#include "../models/patient.h"
 #include <sstream>
+#include <iomanip>
 
 PatientService::PatientService(std::shared_ptr<DBManager> db) : db_manager(db) {
     auto& conn = db_manager->getConnection();
@@ -29,10 +31,15 @@ int PatientService::createPatient(const Patient& patient, int user_id, const std
 
     db_manager->setAuditContext(user_id, ip, session);
     pqxx::work txn(db_manager->getConnection());
+    // Convert time_t to formatted date string
+    std::tm* tm_ptr = std::localtime(&patient.dob);
+    char date_buffer[11]; // YYYY-MM-DD + null terminator
+    std::strftime(date_buffer, sizeof(date_buffer), "%Y-%m-%d", tm_ptr);
+
     auto result = txn.exec_prepared("insert_patient",
         patient.first_name,
         patient.last_name,
-        std::ctime(&patient.dob),
+        std::string(date_buffer), // Formatted date string
         patient.gender,
         patient.address,
         patient.mobile,
@@ -61,8 +68,12 @@ Patient PatientService::getPatient(int patient_id, int user_id, const std::strin
     patient.id = row[0].as<int>();
     patient.first_name = row[1].as<std::string>();
     patient.last_name = row[2].as<std::string>();
-    std::stringstream dob_stream(row[3].as<std::string>());
-    dob_stream >> std::get_time(&patient.dob, "%Y-%m-%d");
+    // Convert date string to time_t
+    std::tm tm = {};
+    std::string date_str = row[3].as<std::string>();
+    std::stringstream ss(date_str);
+    ss >> std::get_time(&tm, "%Y-%m-%d");
+    patient.dob = std::mktime(&tm);
     patient.gender = row[4].as<std::string>();
     patient.address = row[5].as<std::string>();
     patient.mobile = row[6].as<std::string>();

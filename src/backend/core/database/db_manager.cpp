@@ -19,7 +19,10 @@ DBManager::~DBManager() {
 }
 
 void DBManager::initializeSchema() {
-    std::ifstream schema_file("schema.sql");
+    std::ifstream schema_file("src/backend/core/database/schema.sql");
+    if (!schema_file.is_open()) {
+        throw std::runtime_error("Failed to open schema file");
+    }
     std::stringstream buffer;
     buffer << schema_file.rdbuf();
     pqxx::work txn(*conn);
