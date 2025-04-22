@@ -1,9 +1,15 @@
 import unittest
 import pandas as pd
+import sys
+import os
+from datetime import datetime
+
+# Add the project root to the Python path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
+
 from src.frontend.python.analytics.kpi_analytics import KPIAnalytics
 from src.frontend.python.analytics.medical_analytics import MedicalAnalytics
 import medisys_bindings
-from datetime import datetime
 
 class TestAnalytics(unittest.TestCase):
     def setUp(self):

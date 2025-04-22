@@ -1,5 +1,5 @@
 #include <catch2/catch.hpp>
-#include "../backend/core/database/db_manager.h"
+#include "../../backend/core/database/db_manager.h"
 
 TEST_CASE("DBManager initializes schema", "[DBManager]") {
     DBManager db("dbname=medisys_test user=postgres password=secret host=localhost sslmode=verify-full");
