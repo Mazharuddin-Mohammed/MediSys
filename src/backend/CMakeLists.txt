@@ -11,10 +11,15 @@ set(BACKEND_SOURCES
 add_library(backend ${BACKEND_SOURCES})
 set_property(TARGET backend PROPERTY POSITION_INDEPENDENT_CODE ON)
 
+# Find OpenSSL
+find_package(OpenSSL REQUIRED)
+
 target_link_libraries(backend
     ${PostgreSQL_LIBRARIES}
     pybind11::module
-    bcrypt
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    pqxx
 )
 
 # Pybind11 module
