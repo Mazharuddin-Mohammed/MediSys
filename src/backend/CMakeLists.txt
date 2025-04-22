@@ -11,6 +11,7 @@ add_library(backend
 target_link_libraries(backend
     ${PostgreSQL_LIBRARIES}
     pybind11::module
+    bcrypt
 )
 
 # Pybind11 module
@@ -19,4 +20,4 @@ target_link_libraries(medisys_bindings PRIVATE backend)
 
 # Main executable
 add_executable(medisys_main main.cpp)
-target_link_libraries(medisys_main backend)v
+target_link_libraries(medisys_main backend)
