@@ -7,9 +7,9 @@ import medisys_bindings
 
 def main():
     app = QApplication(sys.argv)
-    
+
     # Set application icon
-    app.setWindowIcon(QIcon("resources/images/medisys_logo.png"))
+    app.setWindowIcon(QIcon("src/frontend/python/resources/images/logo.jpg"))
 
     # Initialize Vulkan
     vulkan_instance = QVulkanInstance()
@@ -19,11 +19,18 @@ def main():
     app.setVulkanInstance(vulkan_instance)
 
     # Load stylesheet
-    with open("resources/styles/theme.qss", "r") as f:
+    with open("src/frontend/python/resources/styles/theme.qss", "r") as f:
         app.setStyleSheet(f.read())
 
-    # Initialize database
-    db = medisys_bindings.DBManager("dbname=medisys user=postgres password=secret host=localhost")
+    # Initialize database using environment variables or defaults
+    import os
+    db_name = os.environ.get('DB_NAME', 'medisys')
+    db_user = os.environ.get('DB_USER', 'postgres')
+    db_pass = os.environ.get('DB_PASS', 'secret')
+    db_host = os.environ.get('DB_HOST', 'localhost')
+
+    conn_str = f"dbname={db_name} user={db_user} password={db_pass} host={db_host}"
+    db = medisys_bindings.DBManager(conn_str)
     db.initialize_schema()
 
     # Show login window

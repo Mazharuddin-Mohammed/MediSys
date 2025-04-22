@@ -18,7 +18,7 @@ class LoginWindow(QMainWindow):
 
         # Banner
         banner_label = QLabel()
-        banner_pixmap = QPixmap("resources/images/medisys_banner.png")
+        banner_pixmap = QPixmap("src/frontend/python/resources/images/banner.jpg")
         banner_label.setPixmap(banner_pixmap.scaledToWidth(400, Qt.SmoothTransformation))
         banner_label.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(banner_label)
@@ -59,8 +59,15 @@ class LoginWindow(QMainWindow):
             ip_address = "192.168.1.1"  # TODO: Get from network context
             session_id = "session_" + str(uuid.uuid4())
             self.db.set_audit_context(user_id, ip_address, session_id)
-            self.error_label.setText("Login successful")  # TODO: Open main window
+            self.error_label.setText("Login successful")
             self.password_input.clear()
+
+            # Open appropriate window based on user role
+            # For now, we'll just import and show the admin window as an example
+            from gui.admin_window import AdminWindow
+            self.admin_window = AdminWindow()
+            self.admin_window.show()
+            self.close()
         except Exception as e:
             self.error_label.setText("Login failed")
             self.password_input.clear()
