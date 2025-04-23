@@ -1,5 +1,15 @@
 #pragma once
 
+/**
+ * MediSys Hospital Management System - Database Manager Header
+ *
+ * This file defines the DBManager class which handles database connections,
+ * schema initialization, and provides a common interface for database operations.
+ * It uses libpqxx for PostgreSQL connectivity and manages audit context for tracking.
+ *
+ * Author: Mazharuddin Mohammed
+ */
+
 #include <string>
 #include <memory>
 #include <iostream>

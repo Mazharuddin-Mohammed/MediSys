@@ -1,3 +1,13 @@
+/**
+ * MediSys Hospital Management System - Backend Main Entry Point
+ *
+ * This file contains the main entry point for the MediSys backend application.
+ * It initializes the database connection and schema, serving as the standalone
+ * backend process that can be used independently or with the frontend.
+ *
+ * Author: Mazharuddin Mohammed
+ */
+
 #include <iostream>
 #include "core/database/db_manager.h"
 

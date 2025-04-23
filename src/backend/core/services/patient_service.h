@@ -1,4 +1,15 @@
 #pragma once
+
+/**
+ * MediSys Hospital Management System - Patient Service Header
+ *
+ * This file defines the PatientService class which handles patient-related
+ * operations such as creating, retrieving, and updating patient records.
+ * It provides a secure interface for managing patient data with audit logging.
+ *
+ * Author: Mazharuddin Mohammed
+ */
+
 #include "../database/db_manager.h"
 #include "../models/patient.h"
 #include <memory>

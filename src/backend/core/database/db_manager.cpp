@@ -1,3 +1,14 @@
+/**
+ * MediSys Hospital Management System - Database Manager Implementation
+ *
+ * This file implements the DBManager class which handles database connections,
+ * schema initialization, and provides a common interface for database operations.
+ * It includes methods for setting up the database schema, preparing statements,
+ * and managing audit context for tracking user actions.
+ *
+ * Author: Mazharuddin Mohammed
+ */
+
 #include "db_manager.h"
 #include <fstream>
 #include <sstream>

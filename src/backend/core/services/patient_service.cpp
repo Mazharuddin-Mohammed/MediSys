@@ -1,3 +1,13 @@
+/**
+ * MediSys Hospital Management System - Patient Service Implementation
+ *
+ * This file implements the PatientService class which handles patient-related
+ * operations such as creating, retrieving, and updating patient records.
+ * It includes data validation, audit logging, and proper formatting of dates.
+ *
+ * Author: Mazharuddin Mohammed
+ */
+
 #include "patient_service.h"
 #include "../models/patient.h"
 #include <sstream>

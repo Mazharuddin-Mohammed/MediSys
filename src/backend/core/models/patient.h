@@ -1,4 +1,15 @@
 #pragma once
+
+/**
+ * MediSys Hospital Management System - Patient Model
+ *
+ * This file defines the Patient structure and PatientModel class which represent
+ * patient data and provide validation methods for patient attributes. The Patient
+ * structure contains all relevant patient information used throughout the system.
+ *
+ * Author: Mazharuddin Mohammed
+ */
+
 #include <string>
 #include <ctime>
 

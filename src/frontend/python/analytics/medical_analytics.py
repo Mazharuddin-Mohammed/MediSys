@@ -1,3 +1,13 @@
+"""
+Medical Analytics Module for MediSys Hospital Management System
+
+This module provides functionality for analyzing and visualizing medical metrics
+for patients. It includes methods for retrieving patient medical data from the
+database, generating visualizations, and analyzing trends in patient health metrics.
+
+Author: Mazharuddin Mohammed
+"""
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import medisys_bindings

@@ -1,3 +1,13 @@
+"""
+Doctor Window Module for MediSys Hospital Management System
+
+This module implements the doctor dashboard window that provides doctors with
+access to their patient lists, appointments, and medical record management.
+Currently a placeholder for future implementation.
+
+Author: Mazharuddin Mohammed
+"""
+
 from PySide6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLabel
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt

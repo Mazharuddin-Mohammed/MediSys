@@ -1,3 +1,13 @@
+/**
+ * MediSys Hospital Management System - Python Bindings Module
+ *
+ * This file implements the Python bindings for the MediSys C++ backend using pybind11.
+ * It exposes core functionality like database management, authentication, and patient
+ * services to the Python frontend, allowing seamless integration between components.
+ *
+ * Author: Mazharuddin Mohammed
+ */
+
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include "../core/database/db_manager.h"

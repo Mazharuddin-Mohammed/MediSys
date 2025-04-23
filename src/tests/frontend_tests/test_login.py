@@ -1,3 +1,13 @@
+"""
+Login Window Tests for MediSys Hospital Management System
+
+This module contains unit tests for the login window functionality, including
+input validation and error handling. It tests the login form with various
+input scenarios to ensure proper validation and error messages.
+
+Author: Mazharuddin Mohammed
+"""
+
 import unittest
 from PySide6.QtWidgets import QApplication
 import sys

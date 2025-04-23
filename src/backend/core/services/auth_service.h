@@ -1,4 +1,15 @@
 #pragma once
+
+/**
+ * MediSys Hospital Management System - Authentication Service Header
+ *
+ * This file defines the AuthService class which handles user authentication,
+ * password hashing, and verification. It provides a secure interface for
+ * validating user credentials against the database.
+ *
+ * Author: Mazharuddin Mohammed
+ */
+
 #include "../database/db_manager.h"
 #include <memory>
 #include <string>

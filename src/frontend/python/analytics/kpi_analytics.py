@@ -1,3 +1,13 @@
+"""
+KPI Analytics Module for MediSys Hospital Management System
+
+This module provides functionality for analyzing and visualizing Key Performance
+Indicators (KPIs) for doctors and departments. It includes methods for retrieving
+KPI data from the database and generating visualizations for performance metrics.
+
+Author: Mazharuddin Mohammed
+"""
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import medisys_bindings

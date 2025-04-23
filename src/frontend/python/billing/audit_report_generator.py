@@ -1,3 +1,13 @@
+"""
+Audit Report Generator Module for MediSys Hospital Management System
+
+This module provides functionality for generating detailed audit reports in PDF format.
+It retrieves audit log data from the database and creates professional reports with
+filtering options, proper formatting, and visual elements like logos and banners.
+
+Author: Mazharuddin Mohammed
+"""
+
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas

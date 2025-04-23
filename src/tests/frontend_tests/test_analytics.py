@@ -1,3 +1,13 @@
+"""
+Analytics Module Tests for MediSys Hospital Management System
+
+This module contains unit tests for the analytics functionality, including
+KPI analytics and medical analytics. It tests data retrieval and processing
+functions with empty datasets.
+
+Author: Mazharuddin Mohammed
+"""
+
 import unittest
 import pandas as pd
 import sys

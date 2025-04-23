@@ -1,4 +1,15 @@
 #pragma once
+
+/**
+ * MediSys Hospital Management System - User Model
+ *
+ * This file defines the User structure and UserModel class which represent
+ * user data and provide validation methods for user attributes. The User
+ * structure contains authentication and role information for system users.
+ *
+ * Author: Mazharuddin Mohammed
+ */
+
 #include <string>
 
 struct User {

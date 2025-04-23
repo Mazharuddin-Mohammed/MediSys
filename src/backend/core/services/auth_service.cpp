@@ -1,3 +1,13 @@
+/**
+ * MediSys Hospital Management System - Authentication Service Implementation
+ *
+ * This file implements the AuthService class which handles user authentication,
+ * password hashing using SHA-256, and verification. It includes audit logging
+ * for login attempts and security measures for credential validation.
+ *
+ * Author: Mazharuddin Mohammed
+ */
+
 #include "auth_service.h"
 #include "../models/user.h"
 #include <iomanip>

@@ -1,3 +1,13 @@
+"""
+Invoice Generator Module for MediSys Hospital Management System
+
+This module provides functionality for generating patient invoices in PDF format.
+It creates professional-looking invoices with transaction details, patient information,
+and proper formatting including the MediSys banner.
+
+Author: Mazharuddin Mohammed
+"""
+
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch

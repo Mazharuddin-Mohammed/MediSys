@@ -1,4 +1,14 @@
 #!/usr/bin/env python3
+"""
+MediSys Hospital Management System - Simple Frontend
+
+This module provides a simplified command-line interface for testing the MediSys
+backend functionality without the full GUI. It tests database connection,
+authentication, and basic application features.
+
+Author: Mazharuddin Mohammed
+"""
+
 import sys
 import os
 
@@ -10,7 +20,7 @@ try:
     sys.path.append(os.path.abspath("build"))
     import medisys_bindings
     print("Successfully imported medisys_bindings module")
-    
+
     # Create a database connection
     try:
         print("Connecting to database...")
@@ -18,14 +28,14 @@ try:
         print("Initializing schema...")
         db.initialize_schema()
         print("Database initialized successfully")
-        
+
         # Try to authenticate
         try:
             print("\nTrying to authenticate with username 'admin' and password 'admin'...")
             auth_service = medisys_bindings.AuthService(db)
             user_id = auth_service.authenticate("admin", "admin")
             print(f"Authentication successful! User ID: {user_id}")
-            
+
             # Set audit context
             try:
                 print("Setting audit context...")
@@ -33,17 +43,17 @@ try:
                 print("Audit context set successfully")
             except Exception as e:
                 print(f"Error setting audit context: {e}")
-                
+
         except Exception as e:
             print(f"Authentication error: {e}")
-            
+
     except Exception as e:
         print(f"Database error: {e}")
-        
+
 except ImportError as e:
     print(f"Error importing medisys_bindings: {e}")
     print("This is expected if you haven't built the C++ backend or if the Python bindings are not in the Python path.")
-    
+
 print("\nSimulating MediSys application...")
 print("- Users: 5")
 print("- Departments: 3")
