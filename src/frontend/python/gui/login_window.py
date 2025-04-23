@@ -92,7 +92,7 @@ class LoginWindow(QMainWindow):
             # Open appropriate window based on user role
             # For now, we'll just import and show the admin window as an example
             from gui.admin_window import AdminWindow
-            self.admin_window = AdminWindow()
+            self.admin_window = AdminWindow(db=self.db, user_id=user_id)
             self.admin_window.show()
             self.close()
         except Exception as e:
