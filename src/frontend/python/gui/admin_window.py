@@ -28,6 +28,10 @@ class AdminWindow(QMainWindow):
         self.action_patients.triggered.connect(self.show_patients)
         self.toolbar.addAction(self.action_patients)
 
+        self.action_departments = QAction("Departments")
+        self.action_departments.triggered.connect(self.show_departments)
+        self.toolbar.addAction(self.action_departments)
+
         self.action_doctors = QAction("Doctors")
         self.action_doctors.triggered.connect(self.show_doctors)
         self.toolbar.addAction(self.action_doctors)
@@ -243,17 +247,29 @@ class AdminWindow(QMainWindow):
         self.tabs.setCurrentIndex(1)  # Switch to Patients tab
         self.statusBar.showMessage("Viewing patients")
 
+    def show_departments(self):
+        from gui.departments_window import DepartmentsWindow
+        self.departments_window = DepartmentsWindow(db=self.db, user_id=self.user_id)
+        self.departments_window.show()
+        self.statusBar.showMessage("Opened Departments module")
+
     def show_doctors(self):
-        QMessageBox.information(self, "Doctors", "Doctors module not implemented yet.")
-        self.statusBar.showMessage("Doctors module not available")
+        from gui.doctors_window import DoctorsWindow
+        self.doctors_window = DoctorsWindow(db=self.db, user_id=self.user_id)
+        self.doctors_window.show()
+        self.statusBar.showMessage("Opened Doctors module")
 
     def show_appointments(self):
-        QMessageBox.information(self, "Appointments", "Appointments module not implemented yet.")
-        self.statusBar.showMessage("Appointments module not available")
+        from gui.appointments_window import AppointmentsWindow
+        self.appointments_window = AppointmentsWindow(db=self.db, user_id=self.user_id)
+        self.appointments_window.show()
+        self.statusBar.showMessage("Opened Appointments module")
 
     def show_reports(self):
-        QMessageBox.information(self, "Reports", "Reports module not implemented yet.")
-        self.statusBar.showMessage("Reports module not available")
+        from gui.reports_window import ReportsWindow
+        self.reports_window = ReportsWindow(db=self.db, user_id=self.user_id)
+        self.reports_window.show()
+        self.statusBar.showMessage("Opened Reports module")
 
     def show_audit(self):
         self.tabs.setCurrentIndex(2)  # Switch to Audit tab
