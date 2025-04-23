@@ -1,11 +1,20 @@
+"""
+Login Window Module for MediSys Hospital Management System
+
+This module implements the login window that authenticates users and provides
+access to the appropriate modules based on user role. It handles authentication
+through the C++ backend and sets up the audit context for tracking user actions.
+
+Author: Mazharuddin Mohammed
+"""
+
 import sys
 import uuid
+import os
 
 from PySide6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLineEdit, QPushButton, QLabel, QHBoxLayout
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
-import os
-import sys
 
 # Try to import medisys_bindings from different locations
 try:

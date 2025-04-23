@@ -1,4 +1,14 @@
 #!/usr/bin/env python3
+"""
+MediSys Hospital Management System - Application Runner
+
+This script launches both the C++ backend and Python frontend components of the
+MediSys application. It handles process management, environment setup, and ensures
+proper shutdown of all components when the application exits.
+
+Author: Mazharuddin Mohammed
+"""
+
 import sys
 import os
 import subprocess

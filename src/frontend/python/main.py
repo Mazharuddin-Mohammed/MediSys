@@ -1,3 +1,13 @@
+"""
+MediSys Hospital Management System - Frontend Main Module
+
+This module serves as the entry point for the MediSys frontend application.
+It initializes the Qt application, sets up the database connection, applies
+the application theme, and launches the login window.
+
+Author: Mazharuddin Mohammed
+"""
+
 import sys
 import os
 import uuid

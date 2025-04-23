@@ -1,3 +1,13 @@
+"""
+Admin Window Module for MediSys Hospital Management System
+
+This module implements the main admin dashboard window with system overview,
+audit log, and quick access to all other modules. It serves as the central
+hub for system administration and monitoring.
+
+Author: Mazharuddin Mohammed
+"""
+
 from PySide6.QtWidgets import (QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLabel,
                              QTableView, QPushButton, QTabWidget, QTreeView, QListWidget,
                              QGroupBox, QFormLayout, QLineEdit, QDateEdit, QComboBox,
