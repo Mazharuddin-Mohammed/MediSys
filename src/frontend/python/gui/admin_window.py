@@ -104,77 +104,77 @@ class AdminWindow(QMainWindow):
         dashboard_layout.addLayout(stats_layout)
         dashboard_layout.addStretch()
 
-        # Patients tab
-        patients_widget = QWidget()
-        patients_layout = QVBoxLayout(patients_widget)
+        # System Overview tab
+        overview_widget = QWidget()
+        overview_layout = QVBoxLayout(overview_widget)
 
-        # Patient search
-        search_layout = QHBoxLayout()
-        search_label = QLabel("Search:")
-        search_input = QLineEdit()
-        search_button = QPushButton("Search")
-        search_layout.addWidget(search_label)
-        search_layout.addWidget(search_input)
-        search_layout.addWidget(search_button)
-        patients_layout.addLayout(search_layout)
+        # Welcome message
+        welcome_label = QLabel("Welcome to MediSys Admin Dashboard")
+        welcome_label.setStyleSheet("font-size: 18px; font-weight: bold;")
+        welcome_label.setAlignment(Qt.AlignCenter)
+        overview_layout.addWidget(welcome_label)
 
-        # Patient list
-        patients_table = QTableView()
-        patients_model = QStandardItemModel(0, 5)
-        patients_model.setHorizontalHeaderLabels(["ID", "Name", "DOB", "Gender", "Contact"])
-        patients_table.setModel(patients_model)
-        patients_layout.addWidget(patients_table)
+        # System stats
+        stats_layout = QHBoxLayout()
 
-        # Patient actions
-        actions_layout = QHBoxLayout()
-        add_patient_button = QPushButton("Add Patient")
-        add_patient_button.clicked.connect(self.show_add_patient_form)
-        edit_patient_button = QPushButton("Edit Patient")
-        edit_patient_button.clicked.connect(self.show_edit_patient_form)
-        delete_patient_button = QPushButton("Delete Patient")
-        delete_patient_button.clicked.connect(self.delete_patient)
-        actions_layout.addWidget(add_patient_button)
-        actions_layout.addWidget(edit_patient_button)
-        actions_layout.addWidget(delete_patient_button)
-        patients_layout.addLayout(actions_layout)
+        # Users stats
+        users_box = QGroupBox("System Users")
+        users_layout = QVBoxLayout(users_box)
+        users_count = QLabel("Total Users: 15")
+        users_active = QLabel("Active Now: 3")
+        users_layout.addWidget(users_count)
+        users_layout.addWidget(users_active)
+        stats_layout.addWidget(users_box)
 
-        # Patient form (hidden by default)
-        self.patient_form = QWidget()
-        self.patient_form.setVisible(False)
-        form_layout = QFormLayout(self.patient_form)
+        # Database stats
+        db_box = QGroupBox("Database")
+        db_layout = QVBoxLayout(db_box)
+        db_status = QLabel("Status: Connected")
+        db_size = QLabel("Size: 256 MB")
+        db_layout.addWidget(db_status)
+        db_layout.addWidget(db_size)
+        stats_layout.addWidget(db_box)
 
-        self.patient_id_input = QLineEdit()
-        self.patient_id_input.setReadOnly(True)
-        self.patient_id_input.setPlaceholderText("Auto-generated")
+        # System stats
+        system_box = QGroupBox("System")
+        system_layout = QVBoxLayout(system_box)
+        system_uptime = QLabel("Uptime: 15 days")
+        system_version = QLabel("Version: 1.0.0")
+        system_layout.addWidget(system_uptime)
+        system_layout.addWidget(system_version)
+        stats_layout.addWidget(system_box)
 
-        self.patient_name_input = QLineEdit()
-        self.patient_dob_input = QDateEdit()
-        self.patient_dob_input.setCalendarPopup(True)
-        self.patient_dob_input.setDate(QDate(1980, 1, 1))
+        overview_layout.addLayout(stats_layout)
 
-        self.patient_gender_input = QComboBox()
-        self.patient_gender_input.addItems(["Male", "Female", "Other"])
+        # Quick access buttons
+        quick_access_label = QLabel("Quick Access")
+        quick_access_label.setStyleSheet("font-size: 16px; font-weight: bold;")
+        overview_layout.addWidget(quick_access_label)
 
-        self.patient_contact_input = QLineEdit()
-        self.patient_address_input = QTextEdit()
+        quick_buttons_layout = QHBoxLayout()
 
-        form_layout.addRow("ID:", self.patient_id_input)
-        form_layout.addRow("Name:", self.patient_name_input)
-        form_layout.addRow("Date of Birth:", self.patient_dob_input)
-        form_layout.addRow("Gender:", self.patient_gender_input)
-        form_layout.addRow("Contact:", self.patient_contact_input)
-        form_layout.addRow("Address:", self.patient_address_input)
+        patients_button = QPushButton("Patients")
+        patients_button.clicked.connect(self.show_patients)
+        quick_buttons_layout.addWidget(patients_button)
 
-        form_buttons_layout = QHBoxLayout()
-        self.save_patient_button = QPushButton("Save")
-        self.save_patient_button.clicked.connect(self.save_patient)
-        self.cancel_patient_button = QPushButton("Cancel")
-        self.cancel_patient_button.clicked.connect(self.hide_patient_form)
-        form_buttons_layout.addWidget(self.save_patient_button)
-        form_buttons_layout.addWidget(self.cancel_patient_button)
-        form_layout.addRow("", form_buttons_layout)
+        departments_button = QPushButton("Departments")
+        departments_button.clicked.connect(self.show_departments)
+        quick_buttons_layout.addWidget(departments_button)
 
-        patients_layout.addWidget(self.patient_form)
+        doctors_button = QPushButton("Doctors")
+        doctors_button.clicked.connect(self.show_doctors)
+        quick_buttons_layout.addWidget(doctors_button)
+
+        appointments_button = QPushButton("Appointments")
+        appointments_button.clicked.connect(self.show_appointments)
+        quick_buttons_layout.addWidget(appointments_button)
+
+        reports_button = QPushButton("Reports")
+        reports_button.clicked.connect(self.show_reports)
+        quick_buttons_layout.addWidget(reports_button)
+
+        overview_layout.addLayout(quick_buttons_layout)
+        overview_layout.addStretch()
 
         # Audit log tab
         audit_widget = QWidget()
@@ -192,7 +192,7 @@ class AdminWindow(QMainWindow):
 
         # Add tabs
         self.tabs.addTab(dashboard_widget, "Dashboard")
-        self.tabs.addTab(patients_widget, "Patients")
+        self.tabs.addTab(overview_widget, "System Overview")
         self.tabs.addTab(audit_widget, "Audit Log")
 
         # Add some sample data
@@ -200,27 +200,6 @@ class AdminWindow(QMainWindow):
 
     def add_sample_data(self):
         """Add sample data to the tables for demonstration purposes"""
-        # Add sample patients
-        patients_table = None
-        for table in self.findChildren(QTableView):
-            if table.parent() and isinstance(table.parent(), QWidget) and table.parent().layout() and isinstance(table.parent().layout(), QVBoxLayout):
-                # Check if this table is in the patients tab
-                if self.tabs.indexOf(table.parent()) == 1:  # Patients tab index
-                    patients_table = table
-                    break
-
-        if patients_table and patients_table.model():
-            patients_model = patients_table.model()
-            for i in range(5):
-                row_items = [
-                    QStandardItem(str(i+1)),
-                    QStandardItem(f"Patient {i+1}"),
-                    QStandardItem(f"1980-01-{i+1}"),
-                    QStandardItem("Male" if i % 2 == 0 else "Female"),
-                    QStandardItem(f"555-123-{1000+i}")
-                ]
-                patients_model.appendRow(row_items)
-
         # Add sample audit entries
         audit_table = None
         for table in self.findChildren(QTableView):
@@ -244,8 +223,10 @@ class AdminWindow(QMainWindow):
                 audit_model.appendRow(row_items)
 
     def show_patients(self):
-        self.tabs.setCurrentIndex(1)  # Switch to Patients tab
-        self.statusBar.showMessage("Viewing patients")
+        from gui.patients_window import PatientsWindow
+        self.patients_window = PatientsWindow(db=self.db, user_id=self.user_id)
+        self.patients_window.show()
+        self.statusBar.showMessage("Opened Patients module")
 
     def show_departments(self):
         from gui.departments_window import DepartmentsWindow
@@ -275,175 +256,3 @@ class AdminWindow(QMainWindow):
         self.tabs.setCurrentIndex(2)  # Switch to Audit tab
         self.statusBar.showMessage("Viewing audit log")
 
-    def show_add_patient_form(self):
-        # Clear form fields
-        self.patient_id_input.clear()
-        self.patient_name_input.clear()
-        self.patient_dob_input.setDate(QDate(1980, 1, 1))
-        self.patient_gender_input.setCurrentIndex(0)
-        self.patient_contact_input.clear()
-        self.patient_address_input.clear()
-
-        # Show the form
-        self.patient_form.setVisible(True)
-        self.statusBar.showMessage("Adding new patient")
-
-    def show_edit_patient_form(self):
-        # Get the selected patient from the table
-        patients_table = None
-        for table in self.findChildren(QTableView):
-            if table.parent() and isinstance(table.parent(), QWidget) and table.parent().layout() and isinstance(table.parent().layout(), QVBoxLayout):
-                if self.tabs.indexOf(table.parent()) == 1:  # Patients tab index
-                    patients_table = table
-                    break
-
-        if not patients_table:
-            QMessageBox.warning(self, "Error", "Could not find patients table.")
-            return
-
-        selected_indexes = patients_table.selectedIndexes()
-        if not selected_indexes:
-            QMessageBox.warning(self, "Error", "Please select a patient to edit.")
-            return
-
-        # Get the row of the first selected cell
-        row = selected_indexes[0].row()
-        model = patients_table.model()
-
-        # Fill the form with the selected patient's data
-        self.patient_id_input.setText(model.item(row, 0).text())
-        self.patient_name_input.setText(model.item(row, 1).text())
-
-        # Parse the date
-        dob_text = model.item(row, 2).text()
-        try:
-            year, month, day = map(int, dob_text.split('-'))
-            self.patient_dob_input.setDate(QDate(year, month, day))
-        except (ValueError, AttributeError):
-            self.patient_dob_input.setDate(QDate(1980, 1, 1))
-
-        # Set gender
-        gender_text = model.item(row, 3).text()
-        gender_index = 0  # Default to Male
-        if gender_text == "Female":
-            gender_index = 1
-        elif gender_text == "Other":
-            gender_index = 2
-        self.patient_gender_input.setCurrentIndex(gender_index)
-
-        # Set contact
-        self.patient_contact_input.setText(model.item(row, 4).text())
-
-        # Address is not shown in the table, so we'll leave it empty
-        self.patient_address_input.clear()
-
-        # Show the form
-        self.patient_form.setVisible(True)
-        self.statusBar.showMessage("Editing patient")
-
-    def hide_patient_form(self):
-        self.patient_form.setVisible(False)
-        self.statusBar.showMessage("Ready")
-
-    def save_patient(self):
-        # Get values from form
-        patient_id = self.patient_id_input.text()
-        name = self.patient_name_input.text()
-        dob = self.patient_dob_input.date().toString("yyyy-MM-dd")
-        gender = self.patient_gender_input.currentText()
-        contact = self.patient_contact_input.text()
-        address = self.patient_address_input.toPlainText()
-
-        # Validate input
-        if not name:
-            QMessageBox.warning(self, "Error", "Name is required.")
-            return
-
-        # Get the patients table
-        patients_table = None
-        for table in self.findChildren(QTableView):
-            if table.parent() and isinstance(table.parent(), QWidget) and table.parent().layout() and isinstance(table.parent().layout(), QVBoxLayout):
-                if self.tabs.indexOf(table.parent()) == 1:  # Patients tab index
-                    patients_table = table
-                    break
-
-        if not patients_table:
-            QMessageBox.warning(self, "Error", "Could not find patients table.")
-            return
-
-        model = patients_table.model()
-
-        # If patient_id is empty, add a new patient
-        if not patient_id:
-            # Generate a new ID
-            new_id = model.rowCount() + 1
-
-            # Add a new row to the table
-            model.appendRow([
-                QStandardItem(str(new_id)),
-                QStandardItem(name),
-                QStandardItem(dob),
-                QStandardItem(gender),
-                QStandardItem(contact)
-            ])
-
-            QMessageBox.information(self, "Success", f"Patient {name} added successfully.")
-        else:
-            # Find the row with the matching ID
-            row = -1
-            for i in range(model.rowCount()):
-                if model.item(i, 0).text() == patient_id:
-                    row = i
-                    break
-
-            if row == -1:
-                QMessageBox.warning(self, "Error", f"Could not find patient with ID {patient_id}.")
-                return
-
-            # Update the row
-            model.item(row, 1).setText(name)
-            model.item(row, 2).setText(dob)
-            model.item(row, 3).setText(gender)
-            model.item(row, 4).setText(contact)
-
-            QMessageBox.information(self, "Success", f"Patient {name} updated successfully.")
-
-        # Hide the form
-        self.hide_patient_form()
-
-    def delete_patient(self):
-        # Get the selected patient from the table
-        patients_table = None
-        for table in self.findChildren(QTableView):
-            if table.parent() and isinstance(table.parent(), QWidget) and table.parent().layout() and isinstance(table.parent().layout(), QVBoxLayout):
-                if self.tabs.indexOf(table.parent()) == 1:  # Patients tab index
-                    patients_table = table
-                    break
-
-        if not patients_table:
-            QMessageBox.warning(self, "Error", "Could not find patients table.")
-            return
-
-        selected_indexes = patients_table.selectedIndexes()
-        if not selected_indexes:
-            QMessageBox.warning(self, "Error", "Please select a patient to delete.")
-            return
-
-        # Get the row of the first selected cell
-        row = selected_indexes[0].row()
-        model = patients_table.model()
-
-        # Get patient details
-        patient_id = model.item(row, 0).text()
-        patient_name = model.item(row, 1).text()
-
-        # Confirm deletion
-        reply = QMessageBox.question(self, "Confirm Deletion",
-                                    f"Are you sure you want to delete patient {patient_name}?",
-                                    QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-
-        if reply == QMessageBox.Yes:
-            # Remove the row
-            model.removeRow(row)
-            QMessageBox.information(self, "Success", f"Patient {patient_name} deleted successfully.")
-            self.statusBar.showMessage(f"Deleted patient {patient_id}")
