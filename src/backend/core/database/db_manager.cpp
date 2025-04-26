@@ -81,9 +81,9 @@ void DBManager::initializeSchema() {
                 "ON CONFLICT (username) DO NOTHING");
 
         // Create default doctor user with password 'doctor123'
-        // SHA-256 hash of 'doctor123' is 7d42522a19d84b8b51d5c73e7d157e3c293205f83c844b1e865324d60146dbb0
+        // SHA-256 hash of 'doctor123' is f348d5628621f3d8f59c8cabda0f8eb0aa7e0514a90be7571020b1336f26c113
         txn.exec("INSERT INTO users (username, password_hash, email, role, first_name, last_name, created_at) "
-                "VALUES ('doctor', '7d42522a19d84b8b51d5c73e7d157e3c293205f83c844b1e865324d60146dbb0', "
+                "VALUES ('doctor', 'f348d5628621f3d8f59c8cabda0f8eb0aa7e0514a90be7571020b1336f26c113', "
                 "'doctor@medisys.com', 'doctor', 'John', 'Smith', CURRENT_TIMESTAMP) "
                 "ON CONFLICT (username) DO NOTHING");
 
@@ -115,9 +115,9 @@ void DBManager::initializeSchema() {
 
         if (!doctor_exists) {
             // Create default doctor user with password 'doctor123'
-            // SHA-256 hash of 'doctor123' is 7d42522a19d84b8b51d5c73e7d157e3c293205f83c844b1e865324d60146dbb0
+            // SHA-256 hash of 'doctor123' is f348d5628621f3d8f59c8cabda0f8eb0aa7e0514a90be7571020b1336f26c113
             txn.exec("INSERT INTO users (username, password_hash, email, role, first_name, last_name, created_at) "
-                    "VALUES ('doctor', '7d42522a19d84b8b51d5c73e7d157e3c293205f83c844b1e865324d60146dbb0', "
+                    "VALUES ('doctor', 'f348d5628621f3d8f59c8cabda0f8eb0aa7e0514a90be7571020b1336f26c113', "
                     "'doctor@medisys.com', 'doctor', 'John', 'Smith', CURRENT_TIMESTAMP)");
             std::cout << "Default doctor user created with username 'doctor' and password 'doctor123'" << std::endl;
 
