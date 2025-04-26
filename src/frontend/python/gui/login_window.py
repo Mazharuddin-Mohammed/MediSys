@@ -75,6 +75,9 @@ class LoginWindow(QMainWindow):
         # Connect signals
         self.login_button.clicked.connect(self.handle_login)
 
+        # Enable Enter key for login
+        self.password_input.returnPressed.connect(self.handle_login)
+
     def handle_login(self):
         username = self.username_input.text().strip()
         password = self.password_input.text()

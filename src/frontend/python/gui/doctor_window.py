@@ -62,6 +62,12 @@ class DoctorWindow(QMainWindow):
         self.action_help.triggered.connect(self.show_help)
         self.toolbar.addAction(self.action_help)
 
+        # Add logout action
+        self.toolbar.addSeparator()
+        self.action_logout = QAction("Logout")
+        self.action_logout.triggered.connect(self.logout)
+        self.toolbar.addAction(self.action_logout)
+
         # Create central widget with tab interface
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -459,3 +465,29 @@ class DoctorWindow(QMainWindow):
             from PySide6.QtWidgets import QMessageBox
             QMessageBox.information(self, "Success", "Prescription created successfully!")
             self.statusBar.showMessage("Prescription created")
+
+    def logout(self):
+        """Logout the current user and return to login screen"""
+        from PySide6.QtWidgets import QMessageBox
+        from gui.login_window import LoginWindow
+
+        # Confirm logout
+        reply = QMessageBox.question(
+            self,
+            "Confirm Logout",
+            "Are you sure you want to logout?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+
+        if reply == QMessageBox.Yes:
+            # Close all child windows
+            for window in self.findChildren(QMainWindow):
+                window.close()
+
+            # Show login window
+            self.login_window = LoginWindow(db=self.db)
+            self.login_window.show()
+
+            # Close this window
+            self.close()

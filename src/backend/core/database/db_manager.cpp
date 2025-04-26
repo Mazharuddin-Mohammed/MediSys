@@ -75,9 +75,16 @@ void DBManager::initializeSchema() {
 
         // Create default admin user with password 'admin'
         // SHA-256 hash of 'admin' is 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
-        txn.exec("INSERT INTO users (username, password_hash, email, role, created_at) "
+        txn.exec("INSERT INTO users (username, password_hash, email, role, first_name, last_name, created_at) "
                 "VALUES ('admin', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', "
-                "'admin@medisys.com', 'admin', CURRENT_TIMESTAMP) "
+                "'admin@medisys.com', 'admin', 'System', 'Administrator', CURRENT_TIMESTAMP) "
+                "ON CONFLICT (username) DO NOTHING");
+
+        // Create default doctor user with password 'doctor123'
+        // SHA-256 hash of 'doctor123' is 7d42522a19d84b8b51d5c73e7d157e3c293205f83c844b1e865324d60146dbb0
+        txn.exec("INSERT INTO users (username, password_hash, email, role, first_name, last_name, created_at) "
+                "VALUES ('doctor', '7d42522a19d84b8b51d5c73e7d157e3c293205f83c844b1e865324d60146dbb0', "
+                "'doctor@medisys.com', 'doctor', 'John', 'Smith', CURRENT_TIMESTAMP) "
                 "ON CONFLICT (username) DO NOTHING");
 
         txn.commit();
@@ -86,22 +93,59 @@ void DBManager::initializeSchema() {
     } else {
         std::cout << "Database schema already exists, skipping initialization" << std::endl;
 
-        // Check if admin user exists, create if not
+        // Check if default users exist, create if not
         pqxx::work txn(*conn);
-        auto result = txn.exec("SELECT COUNT(*) FROM users WHERE username = 'admin'");
-        bool admin_exists = result[0][0].as<int>() > 0;
+
+        // Check for admin user
+        auto admin_result = txn.exec("SELECT COUNT(*) FROM users WHERE username = 'admin'");
+        bool admin_exists = admin_result[0][0].as<int>() > 0;
+
+        // Check for doctor user
+        auto doctor_result = txn.exec("SELECT COUNT(*) FROM users WHERE username = 'doctor'");
+        bool doctor_exists = doctor_result[0][0].as<int>() > 0;
 
         if (!admin_exists) {
             // Create default admin user with password 'admin'
             // SHA-256 hash of 'admin' is 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
-            txn.exec("INSERT INTO users (username, password_hash, email, role, created_at) "
+            txn.exec("INSERT INTO users (username, password_hash, email, role, first_name, last_name, created_at) "
                     "VALUES ('admin', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', "
-                    "'admin@medisys.com', 'admin', CURRENT_TIMESTAMP)");
-            txn.commit();
+                    "'admin@medisys.com', 'admin', 'System', 'Administrator', CURRENT_TIMESTAMP)");
             std::cout << "Default admin user created with username 'admin' and password 'admin'" << std::endl;
-        } else {
-            txn.commit();
         }
+
+        if (!doctor_exists) {
+            // Create default doctor user with password 'doctor123'
+            // SHA-256 hash of 'doctor123' is 7d42522a19d84b8b51d5c73e7d157e3c293205f83c844b1e865324d60146dbb0
+            txn.exec("INSERT INTO users (username, password_hash, email, role, first_name, last_name, created_at) "
+                    "VALUES ('doctor', '7d42522a19d84b8b51d5c73e7d157e3c293205f83c844b1e865324d60146dbb0', "
+                    "'doctor@medisys.com', 'doctor', 'John', 'Smith', CURRENT_TIMESTAMP)");
+            std::cout << "Default doctor user created with username 'doctor' and password 'doctor123'" << std::endl;
+
+            // Create doctor record in doctors table
+            // First get the user_id for the doctor user
+            auto doctor_id_result = txn.exec("SELECT id FROM users WHERE username = 'doctor'");
+            if (!doctor_id_result.empty()) {
+                int doctor_user_id = doctor_id_result[0][0].as<int>();
+
+                // Create a default department if it doesn't exist
+                txn.exec("INSERT INTO departments (name, description) "
+                        "VALUES ('Cardiology', 'Department of Cardiology') "
+                        "ON CONFLICT (name) DO NOTHING");
+
+                // Get the department_id
+                auto dept_id_result = txn.exec("SELECT id FROM departments WHERE name = 'Cardiology'");
+                if (!dept_id_result.empty()) {
+                    int dept_id = dept_id_result[0][0].as<int>();
+
+                    // Create the doctor record
+                    txn.exec("INSERT INTO doctors (user_id, department_id, first_name, last_name, specialization, license_number, mobile) "
+                            "VALUES (" + std::to_string(doctor_user_id) + ", " + std::to_string(dept_id) + ", 'John', 'Smith', 'Cardiology', 'MD12345', '555-123-4567') "
+                            "ON CONFLICT (user_id) DO NOTHING");
+                }
+            }
+        }
+
+        txn.commit();
     }
 }
 

@@ -58,6 +58,12 @@ class AdminWindow(QMainWindow):
         self.action_audit.triggered.connect(self.show_audit)
         self.toolbar.addAction(self.action_audit)
 
+        # Add separator and logout action
+        self.toolbar.addSeparator()
+        self.action_logout = QAction("Logout")
+        self.action_logout.triggered.connect(self.logout)
+        self.toolbar.addAction(self.action_logout)
+
         # Create central widget with tab interface
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -265,4 +271,29 @@ class AdminWindow(QMainWindow):
     def show_audit(self):
         self.tabs.setCurrentIndex(2)  # Switch to Audit tab
         self.statusBar.showMessage("Viewing audit log")
+
+    def logout(self):
+        """Logout the current user and return to login screen"""
+        from gui.login_window import LoginWindow
+
+        # Confirm logout
+        reply = QMessageBox.question(
+            self,
+            "Confirm Logout",
+            "Are you sure you want to logout?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+
+        if reply == QMessageBox.Yes:
+            # Close all child windows
+            for window in self.findChildren(QMainWindow):
+                window.close()
+
+            # Show login window
+            self.login_window = LoginWindow(db=self.db)
+            self.login_window.show()
+
+            # Close this window
+            self.close()
 
