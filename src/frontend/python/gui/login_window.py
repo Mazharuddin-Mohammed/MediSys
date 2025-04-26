@@ -86,7 +86,26 @@ class LoginWindow(QMainWindow):
             return
         try:
             auth_service = medisys_bindings.AuthService(self.db)
-            user_id = auth_service.authenticate(username, password)
+            auth_result = auth_service.authenticate(username, password)
+
+            # In a real implementation, auth_result would be a dictionary with user info
+            # For now, we'll just get the user_id and assume a role based on the username
+            if isinstance(auth_result, dict):
+                user_id = auth_result.get("user_id")
+                # Role should come from the auth_result, but for now we'll determine it from the username
+            else:
+                # If auth_result is just the user_id (current implementation)
+                user_id = auth_result
+                # For testing, we'll determine role based on username
+                if username.lower() == "admin":
+                    auth_result = {"role": "admin", "user_id": user_id}
+                elif username.lower().startswith("doc"):
+                    auth_result = {"role": "doctor", "user_id": user_id}
+                elif username.lower().startswith("pat"):
+                    auth_result = {"role": "patient", "user_id": user_id}
+                else:
+                    auth_result = {"role": "admin", "user_id": user_id}  # Default to admin
+
             ip_address = "192.168.1.1"  # TODO: Get from network context
             session_id = "session_" + str(uuid.uuid4())
 
@@ -99,10 +118,23 @@ class LoginWindow(QMainWindow):
             self.password_input.clear()
 
             # Open appropriate window based on user role
-            # For now, we'll just import and show the admin window as an example
-            from gui.admin_window import AdminWindow
-            self.admin_window = AdminWindow(db=self.db, user_id=user_id)
-            self.admin_window.show()
+            user_role = auth_result.get("role", "").lower()
+
+            if user_role == "admin":
+                from gui.admin_window import AdminWindow
+                self.next_window = AdminWindow(db=self.db, user_id=user_id)
+            elif user_role == "doctor":
+                from gui.doctor_window import DoctorWindow
+                self.next_window = DoctorWindow(db=self.db, user_id=user_id)
+            elif user_role == "patient":
+                from gui.patient_window import PatientWindow
+                self.next_window = PatientWindow()
+            else:
+                # Default to admin window if role is unknown
+                from gui.admin_window import AdminWindow
+                self.next_window = AdminWindow(db=self.db, user_id=user_id)
+
+            self.next_window.show()
             self.close()
         except Exception as e:
             print(f"Login error: {e}")
