@@ -26,13 +26,35 @@ int AuthService::authenticate(const std::string& username, const std::string& pa
     }
 
     pqxx::work txn(db_manager->getConnection());
+
+    // First, check if we have a system user for audit logging
+    auto system_user_result = txn.exec("SELECT id FROM users WHERE username = 'system' LIMIT 1");
+    int system_user_id = 0;
+
+    // If system user doesn't exist, create it
+    if (system_user_result.empty()) {
+        auto new_system_user = txn.exec(
+            "INSERT INTO users (username, password_hash, email, role, first_name, last_name) "
+            "VALUES ('system', 'not_for_login', 'system@medisys.com', 'admin', 'System', 'User') "
+            "RETURNING id"
+        );
+        if (!new_system_user.empty()) {
+            system_user_id = new_system_user[0][0].as<int>();
+        }
+    } else {
+        system_user_id = system_user_result[0][0].as<int>();
+    }
+
+    // Now proceed with authentication
     auto result = txn.exec_prepared("select_user", username);
     if (result.empty()) {
         std::string json = "{\"username\":\"" + username + "\", \"reason\":\"user not found\"}";
+        // Use system user ID for audit logging
         txn.exec_prepared("log_audit",
-            0, "failed_login", "user", 0,
+            system_user_id, "failed_login", "user", 0,
             json,
             "unknown", "unknown");
+        txn.commit();
         throw std::runtime_error("Invalid credentials");
     }
 
@@ -42,14 +64,17 @@ int AuthService::authenticate(const std::string& username, const std::string& pa
 
     if (!verifyPassword(password, stored_hash)) {
         std::string json = "{\"username\":\"" + username + "\", \"reason\":\"incorrect password\"}";
+        // Use system user ID for audit logging
         txn.exec_prepared("log_audit",
-            0, "failed_login", "user", user_id,
+            system_user_id, "failed_login", "user", user_id,
             json,
             "unknown", "unknown");
+        txn.commit();
         throw std::runtime_error("Invalid credentials");
     }
 
     std::string json = "{\"username\":\"" + username + "\"}";
+    // Use the actual user ID for successful login
     txn.exec_prepared("log_audit",
         user_id, "successful_login", "user", user_id,
         json,

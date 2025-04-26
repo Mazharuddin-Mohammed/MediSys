@@ -113,7 +113,11 @@ class LoginWindow(QMainWindow):
             session_id = "session_" + str(uuid.uuid4())
 
             try:
-                self.db.set_audit_context(user_id, ip_address, session_id)
+                # Make sure user_id is valid before setting audit context
+                if user_id and user_id > 0:
+                    self.db.set_audit_context(user_id, ip_address, session_id)
+                else:
+                    print("Warning: Invalid user_id for audit context")
             except Exception as audit_error:
                 print(f"Warning: Could not set audit context: {audit_error}")
 
