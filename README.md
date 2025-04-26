@@ -4,6 +4,20 @@ MediSys is a comprehensive hospital management system with a modular architectur
 
 ![MediSys Banner](src/frontend/python/resources/images/medisys_banner.png)
 
+## Screenshots
+
+### Login Screen
+![Login Screen](src/frontend/python/resources/images/screenshots/login_screen.png)
+
+### Admin Dashboard
+![Admin Dashboard](src/frontend/python/resources/images/screenshots/admin_dashboard.png)
+
+### Patient Management
+![Patient Management](src/frontend/python/resources/images/screenshots/patient_management.png)
+
+### Doctor Dashboard
+![Doctor Dashboard](src/frontend/python/resources/images/screenshots/doctor_dashboard.png)
+
 ## Features
 
 ### Admin Dashboard
@@ -17,6 +31,7 @@ MediSys is a comprehensive hospital management system with a modular architectur
 - Add, edit, and delete patient information
 - View patient medical history
 - Search functionality for quick access to patient records
+- Patient photo management with placeholder images
 
 ### Departments Module
 - Department creation and management
@@ -27,6 +42,7 @@ MediSys is a comprehensive hospital management system with a modular architectur
 - Doctor profile management
 - Specialization and department assignment
 - Track doctor workload and performance
+- Doctor photo management with placeholder images
 
 ### Appointments Module
 - Calendar-based appointment scheduling
@@ -102,12 +118,26 @@ MediSys is a comprehensive hospital management system with a modular architectur
    python run_app.py
    ```
 
-## Default Login
+## Default Login Credentials
+
+### Admin User
 - Username: admin
 - Password: admin
 
+### Doctor User
+- Username: doctor
+- Password: doctor123
+
 ## Contributing
 Contributions are welcome! Please read the [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests.
+
+## Support the Project
+
+[![Buy Me A Coffee](src/frontend/python/resources/images/buy_me_coffee.svg)](https://buymeacoffee.com/mazharm)
+
+Hi, I'm a passionate scientist dedicated to bridging the gap between academia and industry through research exploitation and knowledge transfer. My work focuses on turning cutting-edge academic discoveries into practical, real-world solutions that drive innovation and impact. By fostering collaboration and translating complex research into accessible applications, I aim to create a seamless flow of knowledge that benefits both worlds.
+
+If you'd like to support my mission to connect ideas with impact, consider buying me a coffee! Your support helps fuel my efforts to build stronger bridges between researchers and industry innovators. Thank you for being part of this journey!
 
 ## Author
 Mazharuddin Mohammed
