@@ -10,18 +10,71 @@ Author: Mazharuddin Mohammed
 
 from PySide6.QtWidgets import (QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLabel,
                              QTableView, QPushButton, QFormLayout, QLineEdit, QTextEdit,
-                             QMessageBox, QDialog, QDialogButtonBox, QComboBox, QDateEdit)
-from PySide6.QtGui import QStandardItemModel, QStandardItem
-from PySide6.QtCore import Qt, QDate
+                             QMessageBox, QDialog, QDialogButtonBox, QComboBox, QDateEdit,
+                             QFileDialog)
+from PySide6.QtGui import QStandardItemModel, QStandardItem, QPixmap, QImage
+from PySide6.QtCore import Qt, QDate, QSize, QBuffer, QIODevice, QByteArray
+import os
+import base64
 
 class PatientForm(QDialog):
     def __init__(self, parent=None, patient_data=None):
         super().__init__(parent)
         self.setWindowTitle("Patient Details")
-        self.setMinimumWidth(500)
+        self.setMinimumWidth(600)
 
-        # Create form layout
-        layout = QFormLayout(self)
+        # Main layout
+        main_layout = QHBoxLayout(self)
+
+        # Photo section (left side)
+        photo_widget = QWidget()
+        photo_layout = QVBoxLayout(photo_widget)
+
+        # Photo display
+        self.photo_label = QLabel()
+        self.photo_label.setFixedSize(200, 200)
+        self.photo_label.setAlignment(Qt.AlignCenter)
+        self.photo_label.setStyleSheet("border: 1px solid #CCCCCC;")
+
+        # Initialize with placeholder image
+        self.photo_data = None
+        if patient_data and 'photo' in patient_data and patient_data['photo']:
+            # If photo data is provided, use it
+            self.photo_data = patient_data['photo']
+            pixmap = QPixmap()
+            pixmap.loadFromData(base64.b64decode(self.photo_data))
+            self.photo_label.setPixmap(pixmap.scaled(200, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        else:
+            # Use placeholder image
+            placeholder_path = "src/frontend/python/resources/images/placeholders/patient_placeholder.png"
+            if os.path.exists(placeholder_path):
+                pixmap = QPixmap(placeholder_path)
+                self.photo_label.setPixmap(pixmap.scaled(200, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            else:
+                self.photo_label.setText("No Photo")
+
+        photo_layout.addWidget(self.photo_label)
+
+        # Photo buttons
+        photo_buttons_layout = QHBoxLayout()
+
+        self.upload_photo_button = QPushButton("Upload Photo")
+        self.upload_photo_button.clicked.connect(self.upload_photo)
+
+        self.remove_photo_button = QPushButton("Remove Photo")
+        self.remove_photo_button.clicked.connect(self.remove_photo)
+
+        photo_buttons_layout.addWidget(self.upload_photo_button)
+        photo_buttons_layout.addWidget(self.remove_photo_button)
+
+        photo_layout.addLayout(photo_buttons_layout)
+        photo_layout.addStretch()
+
+        main_layout.addWidget(photo_widget)
+
+        # Form section (right side)
+        form_widget = QWidget()
+        form_layout = QFormLayout(form_widget)
 
         # Create form fields
         self.id_input = QLineEdit()
@@ -73,21 +126,59 @@ class PatientForm(QDialog):
             self.insurance_input.setText(patient_data['insurance'])
 
         # Add fields to form
-        layout.addRow("ID:", self.id_input)
-        layout.addRow("Name:", self.name_input)
-        layout.addRow("Date of Birth:", self.dob_input)
-        layout.addRow("Gender:", self.gender_input)
-        layout.addRow("Contact:", self.contact_input)
-        layout.addRow("Email:", self.email_input)
-        layout.addRow("Address:", self.address_input)
-        layout.addRow("Emergency Contact:", self.emergency_contact_input)
-        layout.addRow("Insurance:", self.insurance_input)
+        form_layout.addRow("ID:", self.id_input)
+        form_layout.addRow("Name:", self.name_input)
+        form_layout.addRow("Date of Birth:", self.dob_input)
+        form_layout.addRow("Gender:", self.gender_input)
+        form_layout.addRow("Contact:", self.contact_input)
+        form_layout.addRow("Email:", self.email_input)
+        form_layout.addRow("Address:", self.address_input)
+        form_layout.addRow("Emergency Contact:", self.emergency_contact_input)
+        form_layout.addRow("Insurance:", self.insurance_input)
 
         # Add buttons
         self.button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)
-        layout.addRow(self.button_box)
+        form_layout.addRow(self.button_box)
+
+        main_layout.addWidget(form_widget)
+
+        # Set the ratio between photo and form sections
+        main_layout.setStretch(0, 1)  # Photo section
+        main_layout.setStretch(1, 2)  # Form section
+
+    def upload_photo(self):
+        """Open file dialog to select a photo"""
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, "Select Photo", "", "Image Files (*.png *.jpg *.jpeg *.bmp)"
+        )
+
+        if file_path:
+            # Load the selected image
+            pixmap = QPixmap(file_path)
+
+            # Scale the image to fit the label while maintaining aspect ratio
+            self.photo_label.setPixmap(pixmap.scaled(200, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+
+            # Convert the image to base64 for storage
+            image = QImage(file_path)
+            byte_array = QByteArray()
+            buffer = QBuffer(byte_array)
+            buffer.open(QIODevice.WriteOnly)
+            image.save(buffer, "PNG")
+            self.photo_data = base64.b64encode(byte_array.data()).decode('utf-8')
+
+    def remove_photo(self):
+        """Remove the current photo and use placeholder"""
+        self.photo_data = None
+        placeholder_path = "src/frontend/python/resources/images/placeholders/patient_placeholder.png"
+        if os.path.exists(placeholder_path):
+            pixmap = QPixmap(placeholder_path)
+            self.photo_label.setPixmap(pixmap.scaled(200, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        else:
+            self.photo_label.clear()
+            self.photo_label.setText("No Photo")
 
     def get_patient_data(self):
         return {
@@ -99,7 +190,8 @@ class PatientForm(QDialog):
             'email': self.email_input.text(),
             'address': self.address_input.toPlainText(),
             'emergency_contact': self.emergency_contact_input.text(),
-            'insurance': self.insurance_input.text()
+            'insurance': self.insurance_input.text(),
+            'photo': self.photo_data
         }
 
 class PatientsWindow(QMainWindow):
@@ -137,14 +229,15 @@ class PatientsWindow(QMainWindow):
 
         # Patients table
         self.patients_table = QTableView()
-        self.patients_model = QStandardItemModel(0, 6)
+        self.patients_model = QStandardItemModel(0, 7)  # Added column for photo indicator
         self.patients_model.setHorizontalHeaderLabels([
-            "ID", "Name", "DOB", "Gender", "Contact", "Insurance"
+            "Photo", "ID", "Name", "DOB", "Gender", "Contact", "Insurance"
         ])
         self.patients_table.setModel(self.patients_model)
         self.patients_table.setSelectionBehavior(QTableView.SelectRows)
         self.patients_table.setSelectionMode(QTableView.SingleSelection)
         self.patients_table.setEditTriggers(QTableView.NoEditTriggers)
+        self.patients_table.setColumnWidth(0, 60)  # Photo column width
         main_layout.addWidget(self.patients_table)
 
         # Buttons
@@ -192,7 +285,8 @@ class PatientsWindow(QMainWindow):
                 "email": "john.doe@example.com",
                 "address": "123 Main St, Anytown, USA",
                 "emergency_contact": "Jane Doe: 555-987-6543",
-                "insurance": "Blue Cross #12345678"
+                "insurance": "Blue Cross #12345678",
+                "photo": None  # No photo
             },
             {
                 "id": 2,
@@ -203,7 +297,8 @@ class PatientsWindow(QMainWindow):
                 "email": "jane.smith@example.com",
                 "address": "456 Oak Ave, Somewhere, USA",
                 "emergency_contact": "John Smith: 555-876-5432",
-                "insurance": "Aetna #23456789"
+                "insurance": "Aetna #23456789",
+                "photo": None  # No photo
             },
             {
                 "id": 3,
@@ -214,7 +309,8 @@ class PatientsWindow(QMainWindow):
                 "email": "robert.johnson@example.com",
                 "address": "789 Pine St, Nowhere, USA",
                 "emergency_contact": "Mary Johnson: 555-765-4321",
-                "insurance": "Medicare #34567890"
+                "insurance": "Medicare #34567890",
+                "photo": None  # No photo
             },
             {
                 "id": 4,
@@ -225,7 +321,8 @@ class PatientsWindow(QMainWindow):
                 "email": "emily.davis@example.com",
                 "address": "101 Elm St, Elsewhere, USA",
                 "emergency_contact": "Michael Davis: 555-654-3210",
-                "insurance": "Cigna #45678901"
+                "insurance": "Cigna #45678901",
+                "photo": None  # No photo
             },
             {
                 "id": 5,
@@ -236,13 +333,23 @@ class PatientsWindow(QMainWindow):
                 "email": "michael.brown@example.com",
                 "address": "202 Maple Ave, Anywhere, USA",
                 "emergency_contact": "Sarah Brown: 555-543-2109",
-                "insurance": "UnitedHealth #56789012"
+                "insurance": "UnitedHealth #56789012",
+                "photo": None  # No photo
             }
         ]
 
         # Add patients to the model
         for patient in sample_patients:
+            # Create photo status item
+            photo_item = QStandardItem()
+            if patient.get("photo"):
+                photo_item.setText("Yes")
+            else:
+                photo_item.setText("No")
+            photo_item.setTextAlignment(Qt.AlignCenter)
+
             row_items = [
+                photo_item,
                 QStandardItem(str(patient["id"])),
                 QStandardItem(patient["name"]),
                 QStandardItem(patient["dob"]),
@@ -337,7 +444,16 @@ class PatientsWindow(QMainWindow):
 
         # Add filtered patients to the model
         for patient in filtered_patients:
+            # Create photo status item
+            photo_item = QStandardItem()
+            if patient.get("photo"):
+                photo_item.setText("Yes")
+            else:
+                photo_item.setText("No")
+            photo_item.setTextAlignment(Qt.AlignCenter)
+
             row_items = [
+                photo_item,
                 QStandardItem(str(patient["id"])),
                 QStandardItem(patient["name"]),
                 QStandardItem(patient["dob"]),
@@ -364,8 +480,17 @@ class PatientsWindow(QMainWindow):
             # Generate new ID (in a real app, this would be done by the database)
             new_id = self.patients_model.rowCount() + 1
 
+            # Create photo status item
+            photo_item = QStandardItem()
+            if patient_data.get("photo"):
+                photo_item.setText("Yes")
+            else:
+                photo_item.setText("No")
+            photo_item.setTextAlignment(Qt.AlignCenter)
+
             # Add to model
             row_items = [
+                photo_item,
                 QStandardItem(str(new_id)),
                 QStandardItem(patient_data["name"]),
                 QStandardItem(patient_data["dob"]),
@@ -389,16 +514,23 @@ class PatientsWindow(QMainWindow):
 
         # Get patient data from the model
         patient_data = {
-            "id": self.patients_model.item(row, 0).text(),
-            "name": self.patients_model.item(row, 1).text(),
-            "dob": self.patients_model.item(row, 2).text(),
-            "gender": self.patients_model.item(row, 3).text(),
-            "contact": self.patients_model.item(row, 4).text(),
-            "insurance": self.patients_model.item(row, 5).text(),
+            "id": self.patients_model.item(row, 1).text(),  # ID is now in column 1
+            "name": self.patients_model.item(row, 2).text(),
+            "dob": self.patients_model.item(row, 3).text(),
+            "gender": self.patients_model.item(row, 4).text(),
+            "contact": self.patients_model.item(row, 5).text(),
+            "insurance": self.patients_model.item(row, 6).text(),
             "email": "",  # Not shown in the table
             "address": "",  # Not shown in the table
-            "emergency_contact": ""  # Not shown in the table
+            "emergency_contact": "",  # Not shown in the table
+            "photo": None  # Will be updated if available
         }
+
+        # Check if this patient has a photo (based on the "Yes" indicator)
+        has_photo = self.patients_model.item(row, 0).text() == "Yes"
+
+        # In a real application, we would retrieve the photo data from the database
+        # For now, we'll just set a flag to indicate whether a photo exists
 
         # Open dialog with patient data
         dialog = PatientForm(self, patient_data)
@@ -410,12 +542,18 @@ class PatientsWindow(QMainWindow):
                 QMessageBox.warning(self, "Error", "Patient name is required.")
                 return
 
+            # Update photo status
+            if updated_data.get("photo"):
+                self.patients_model.item(row, 0).setText("Yes")
+            else:
+                self.patients_model.item(row, 0).setText("No")
+
             # Update model
-            self.patients_model.item(row, 1).setText(updated_data["name"])
-            self.patients_model.item(row, 2).setText(updated_data["dob"])
-            self.patients_model.item(row, 3).setText(updated_data["gender"])
-            self.patients_model.item(row, 4).setText(updated_data["contact"])
-            self.patients_model.item(row, 5).setText(updated_data["insurance"])
+            self.patients_model.item(row, 2).setText(updated_data["name"])
+            self.patients_model.item(row, 3).setText(updated_data["dob"])
+            self.patients_model.item(row, 4).setText(updated_data["gender"])
+            self.patients_model.item(row, 5).setText(updated_data["contact"])
+            self.patients_model.item(row, 6).setText(updated_data["insurance"])
 
             QMessageBox.information(self, "Success", f"Patient '{updated_data['name']}' updated successfully.")
 
@@ -430,7 +568,7 @@ class PatientsWindow(QMainWindow):
         row = selected_indexes[0].row()
 
         # Get patient name
-        patient_name = self.patients_model.item(row, 1).text()
+        patient_name = self.patients_model.item(row, 2).text()
 
         # Confirm deletion
         reply = QMessageBox.question(self, "Confirm Deletion",
@@ -454,7 +592,7 @@ class PatientsWindow(QMainWindow):
         row = selected_indexes[0].row()
 
         # Get patient name
-        patient_name = self.patients_model.item(row, 1).text()
+        patient_name = self.patients_model.item(row, 2).text()
 
         # In a real application, we would load the medical history from the database
         # For now, just show a message

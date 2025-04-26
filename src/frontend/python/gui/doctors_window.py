@@ -11,18 +11,71 @@ Author: Mazharuddin Mohammed
 
 from PySide6.QtWidgets import (QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLabel,
                              QTableView, QPushButton, QFormLayout, QLineEdit, QTextEdit,
-                             QMessageBox, QDialog, QDialogButtonBox, QComboBox, QDateEdit)
-from PySide6.QtGui import QStandardItemModel, QStandardItem
-from PySide6.QtCore import Qt, QDate
+                             QMessageBox, QDialog, QDialogButtonBox, QComboBox, QDateEdit,
+                             QFileDialog)
+from PySide6.QtGui import QStandardItemModel, QStandardItem, QPixmap, QImage
+from PySide6.QtCore import Qt, QDate, QSize, QBuffer, QIODevice, QByteArray
+import os
+import base64
 
 class DoctorForm(QDialog):
     def __init__(self, parent=None, doctor_data=None, departments=None):
         super().__init__(parent)
         self.setWindowTitle("Doctor Details")
-        self.setMinimumWidth(500)
+        self.setMinimumWidth(600)
 
-        # Create form layout
-        layout = QFormLayout(self)
+        # Main layout
+        main_layout = QHBoxLayout(self)
+
+        # Photo section (left side)
+        photo_widget = QWidget()
+        photo_layout = QVBoxLayout(photo_widget)
+
+        # Photo display
+        self.photo_label = QLabel()
+        self.photo_label.setFixedSize(200, 200)
+        self.photo_label.setAlignment(Qt.AlignCenter)
+        self.photo_label.setStyleSheet("border: 1px solid #CCCCCC;")
+
+        # Initialize with placeholder image
+        self.photo_data = None
+        if doctor_data and 'photo' in doctor_data and doctor_data['photo']:
+            # If photo data is provided, use it
+            self.photo_data = doctor_data['photo']
+            pixmap = QPixmap()
+            pixmap.loadFromData(base64.b64decode(self.photo_data))
+            self.photo_label.setPixmap(pixmap.scaled(200, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        else:
+            # Use placeholder image
+            placeholder_path = "src/frontend/python/resources/images/placeholders/doctor_placeholder.png"
+            if os.path.exists(placeholder_path):
+                pixmap = QPixmap(placeholder_path)
+                self.photo_label.setPixmap(pixmap.scaled(200, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            else:
+                self.photo_label.setText("No Photo")
+
+        photo_layout.addWidget(self.photo_label)
+
+        # Photo buttons
+        photo_buttons_layout = QHBoxLayout()
+
+        self.upload_photo_button = QPushButton("Upload Photo")
+        self.upload_photo_button.clicked.connect(self.upload_photo)
+
+        self.remove_photo_button = QPushButton("Remove Photo")
+        self.remove_photo_button.clicked.connect(self.remove_photo)
+
+        photo_buttons_layout.addWidget(self.upload_photo_button)
+        photo_buttons_layout.addWidget(self.remove_photo_button)
+
+        photo_layout.addLayout(photo_buttons_layout)
+        photo_layout.addStretch()
+
+        main_layout.addWidget(photo_widget)
+
+        # Form section (right side)
+        form_widget = QWidget()
+        form_layout = QFormLayout(form_widget)
 
         # Create form fields
         self.id_input = QLineEdit()
@@ -78,21 +131,59 @@ class DoctorForm(QDialog):
                 pass
 
         # Add fields to form
-        layout.addRow("ID:", self.id_input)
-        layout.addRow("First Name:", self.first_name_input)
-        layout.addRow("Last Name:", self.last_name_input)
-        layout.addRow("Specialization:", self.specialization_input)
-        layout.addRow("License Number:", self.license_input)
-        layout.addRow("Email:", self.email_input)
-        layout.addRow("Phone:", self.phone_input)
-        layout.addRow("Department:", self.department_input)
-        layout.addRow("Hire Date:", self.hire_date_input)
+        form_layout.addRow("ID:", self.id_input)
+        form_layout.addRow("First Name:", self.first_name_input)
+        form_layout.addRow("Last Name:", self.last_name_input)
+        form_layout.addRow("Specialization:", self.specialization_input)
+        form_layout.addRow("License Number:", self.license_input)
+        form_layout.addRow("Email:", self.email_input)
+        form_layout.addRow("Phone:", self.phone_input)
+        form_layout.addRow("Department:", self.department_input)
+        form_layout.addRow("Hire Date:", self.hire_date_input)
 
         # Add buttons
         self.button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)
-        layout.addRow(self.button_box)
+        form_layout.addRow(self.button_box)
+
+        main_layout.addWidget(form_widget)
+
+        # Set the ratio between photo and form sections
+        main_layout.setStretch(0, 1)  # Photo section
+        main_layout.setStretch(1, 2)  # Form section
+
+    def upload_photo(self):
+        """Open file dialog to select a photo"""
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, "Select Photo", "", "Image Files (*.png *.jpg *.jpeg *.bmp)"
+        )
+
+        if file_path:
+            # Load the selected image
+            pixmap = QPixmap(file_path)
+
+            # Scale the image to fit the label while maintaining aspect ratio
+            self.photo_label.setPixmap(pixmap.scaled(200, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+
+            # Convert the image to base64 for storage
+            image = QImage(file_path)
+            byte_array = QByteArray()
+            buffer = QBuffer(byte_array)
+            buffer.open(QIODevice.WriteOnly)
+            image.save(buffer, "PNG")
+            self.photo_data = base64.b64encode(byte_array.data()).decode('utf-8')
+
+    def remove_photo(self):
+        """Remove the current photo and use placeholder"""
+        self.photo_data = None
+        placeholder_path = "src/frontend/python/resources/images/placeholders/doctor_placeholder.png"
+        if os.path.exists(placeholder_path):
+            pixmap = QPixmap(placeholder_path)
+            self.photo_label.setPixmap(pixmap.scaled(200, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        else:
+            self.photo_label.clear()
+            self.photo_label.setText("No Photo")
 
     def get_doctor_data(self):
         return {
@@ -104,7 +195,8 @@ class DoctorForm(QDialog):
             'email': self.email_input.text(),
             'phone': self.phone_input.text(),
             'department': self.department_input.currentText(),
-            'hire_date': self.hire_date_input.date().toString("yyyy-MM-dd")
+            'hire_date': self.hire_date_input.date().toString("yyyy-MM-dd"),
+            'photo': self.photo_data
         }
 
 class DoctorsWindow(QMainWindow):
@@ -128,14 +220,15 @@ class DoctorsWindow(QMainWindow):
 
         # Doctors list
         self.doctors_table = QTableView()
-        self.doctors_model = QStandardItemModel(0, 8)
+        self.doctors_model = QStandardItemModel(0, 9)  # Added column for photo indicator
         self.doctors_model.setHorizontalHeaderLabels([
-            "ID", "Name", "Specialization", "License", "Email", "Phone", "Department", "Hire Date"
+            "Photo", "ID", "Name", "Specialization", "License", "Email", "Phone", "Department", "Hire Date"
         ])
         self.doctors_table.setModel(self.doctors_model)
         self.doctors_table.setSelectionBehavior(QTableView.SelectRows)
         self.doctors_table.setSelectionMode(QTableView.SingleSelection)
         self.doctors_table.setEditTriggers(QTableView.NoEditTriggers)
+        self.doctors_table.setColumnWidth(0, 60)  # Photo column width
         main_layout.addWidget(self.doctors_table)
 
         # Buttons
@@ -179,7 +272,8 @@ class DoctorsWindow(QMainWindow):
                 "email": "john.smith@medisys.com",
                 "phone": "555-123-4567",
                 "department": "Cardiology",
-                "hire_date": "2018-05-15"
+                "hire_date": "2018-05-15",
+                "photo": None  # No photo
             },
             {
                 "id": 2,
@@ -190,7 +284,8 @@ class DoctorsWindow(QMainWindow):
                 "email": "emily.johnson@medisys.com",
                 "phone": "555-234-5678",
                 "department": "Neurology",
-                "hire_date": "2019-03-22"
+                "hire_date": "2019-03-22",
+                "photo": None  # No photo
             },
             {
                 "id": 3,
@@ -201,7 +296,8 @@ class DoctorsWindow(QMainWindow):
                 "email": "michael.williams@medisys.com",
                 "phone": "555-345-6789",
                 "department": "Pediatrics",
-                "hire_date": "2017-11-10"
+                "hire_date": "2017-11-10",
+                "photo": None  # No photo
             },
             {
                 "id": 4,
@@ -212,7 +308,8 @@ class DoctorsWindow(QMainWindow):
                 "email": "sarah.brown@medisys.com",
                 "phone": "555-456-7890",
                 "department": "Orthopedics",
-                "hire_date": "2020-01-05"
+                "hire_date": "2020-01-05",
+                "photo": None  # No photo
             },
             {
                 "id": 5,
@@ -223,13 +320,23 @@ class DoctorsWindow(QMainWindow):
                 "email": "david.davis@medisys.com",
                 "phone": "555-567-8901",
                 "department": "Oncology",
-                "hire_date": "2016-08-30"
+                "hire_date": "2016-08-30",
+                "photo": None  # No photo
             }
         ]
 
         # Add doctors to the model
         for doc in sample_doctors:
+            # Create photo status item
+            photo_item = QStandardItem()
+            if doc.get("photo"):
+                photo_item.setText("Yes")
+            else:
+                photo_item.setText("No")
+            photo_item.setTextAlignment(Qt.AlignCenter)
+
             row_items = [
+                photo_item,
                 QStandardItem(str(doc["id"])),
                 QStandardItem(f"{doc['first_name']} {doc['last_name']}"),
                 QStandardItem(doc["specialization"]),
@@ -262,8 +369,17 @@ class DoctorsWindow(QMainWindow):
             # Generate new ID (in a real app, this would be done by the database)
             new_id = self.doctors_model.rowCount() + 1
 
+            # Create photo status item
+            photo_item = QStandardItem()
+            if doctor_data.get("photo"):
+                photo_item.setText("Yes")
+            else:
+                photo_item.setText("No")
+            photo_item.setTextAlignment(Qt.AlignCenter)
+
             # Add to model
             row_items = [
+                photo_item,
                 QStandardItem(str(new_id)),
                 QStandardItem(f"{doctor_data['first_name']} {doctor_data['last_name']}"),
                 QStandardItem(doctor_data["specialization"]),
@@ -289,21 +405,28 @@ class DoctorsWindow(QMainWindow):
         row = selected_indexes[0].row()
 
         # Get doctor data from the model
-        name_parts = self.doctors_model.item(row, 1).text().split()
+        name_parts = self.doctors_model.item(row, 2).text().split()  # Name is now in column 2
         first_name = name_parts[0] if name_parts else ""
         last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
 
         doctor_data = {
-            "id": self.doctors_model.item(row, 0).text(),
+            "id": self.doctors_model.item(row, 1).text(),  # ID is now in column 1
             "first_name": first_name,
             "last_name": last_name,
-            "specialization": self.doctors_model.item(row, 2).text(),
-            "license": self.doctors_model.item(row, 3).text(),
-            "email": self.doctors_model.item(row, 4).text(),
-            "phone": self.doctors_model.item(row, 5).text(),
-            "department": self.doctors_model.item(row, 6).text(),
-            "hire_date": self.doctors_model.item(row, 7).text()
+            "specialization": self.doctors_model.item(row, 3).text(),
+            "license": self.doctors_model.item(row, 4).text(),
+            "email": self.doctors_model.item(row, 5).text(),
+            "phone": self.doctors_model.item(row, 6).text(),
+            "department": self.doctors_model.item(row, 7).text(),
+            "hire_date": self.doctors_model.item(row, 8).text(),
+            "photo": None  # Will be updated if available
         }
+
+        # Check if this doctor has a photo (based on the "Yes" indicator)
+        has_photo = self.doctors_model.item(row, 0).text() == "Yes"
+
+        # In a real application, we would retrieve the photo data from the database
+        # For now, we'll just set a flag to indicate whether a photo exists
 
         # Open dialog with doctor data
         dialog = DoctorForm(self, doctor_data, departments=self.get_departments())
@@ -315,14 +438,20 @@ class DoctorsWindow(QMainWindow):
                 QMessageBox.warning(self, "Error", "First name and last name are required.")
                 return
 
+            # Update photo status
+            if updated_data.get("photo"):
+                self.doctors_model.item(row, 0).setText("Yes")
+            else:
+                self.doctors_model.item(row, 0).setText("No")
+
             # Update model
-            self.doctors_model.item(row, 1).setText(f"{updated_data['first_name']} {updated_data['last_name']}")
-            self.doctors_model.item(row, 2).setText(updated_data["specialization"])
-            self.doctors_model.item(row, 3).setText(updated_data["license"])
-            self.doctors_model.item(row, 4).setText(updated_data["email"])
-            self.doctors_model.item(row, 5).setText(updated_data["phone"])
-            self.doctors_model.item(row, 6).setText(updated_data["department"])
-            self.doctors_model.item(row, 7).setText(updated_data["hire_date"])
+            self.doctors_model.item(row, 2).setText(f"{updated_data['first_name']} {updated_data['last_name']}")
+            self.doctors_model.item(row, 3).setText(updated_data["specialization"])
+            self.doctors_model.item(row, 4).setText(updated_data["license"])
+            self.doctors_model.item(row, 5).setText(updated_data["email"])
+            self.doctors_model.item(row, 6).setText(updated_data["phone"])
+            self.doctors_model.item(row, 7).setText(updated_data["department"])
+            self.doctors_model.item(row, 8).setText(updated_data["hire_date"])
 
             QMessageBox.information(self, "Success",
                                    f"Doctor '{updated_data['first_name']} {updated_data['last_name']}' updated successfully.")
@@ -338,7 +467,7 @@ class DoctorsWindow(QMainWindow):
         row = selected_indexes[0].row()
 
         # Get doctor name
-        doctor_name = self.doctors_model.item(row, 1).text()
+        doctor_name = self.doctors_model.item(row, 2).text()
 
         # Confirm deletion
         reply = QMessageBox.question(self, "Confirm Deletion",
