@@ -10,9 +10,11 @@ Author: Mazharuddin Mohammed
 
 from PySide6.QtWidgets import (QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLabel,
                              QTableView, QPushButton, QTabWidget, QCalendarWidget, QSplitter,
-                             QToolBar, QStatusBar, QComboBox, QLineEdit, QFormLayout, QTextEdit)
+                             QToolBar, QStatusBar, QComboBox, QLineEdit, QFormLayout, QTextEdit,
+                             QDialog)
 from PySide6.QtGui import QPixmap, QIcon, QAction, QStandardItemModel, QStandardItem
-from PySide6.QtCore import Qt, QSize, QDate, Signal, Slot
+from PySide6.QtCore import Qt, QSize, QDate, Signal, Slot, QUrl
+from PySide6.QtWebEngineWidgets import QWebEngineView
 import os
 import base64
 
@@ -23,6 +25,9 @@ class DoctorWindow(QMainWindow):
         self.user_id = user_id
         self.setWindowTitle("MediSys - Doctor Dashboard")
         self.setMinimumSize(1024, 768)
+
+        # Check if this is the first login (in a real app, this would be stored in user preferences)
+        self.first_login = True  # For demonstration purposes, always show the guide
 
         # Create status bar
         self.statusBar = QStatusBar()
@@ -50,6 +55,12 @@ class DoctorWindow(QMainWindow):
         self.action_profile = QAction("My Profile")
         self.action_profile.triggered.connect(self.show_profile)
         self.toolbar.addAction(self.action_profile)
+
+        # Add help action
+        self.toolbar.addSeparator()
+        self.action_help = QAction("Help")
+        self.action_help.triggered.connect(self.show_help)
+        self.toolbar.addAction(self.action_help)
 
         # Create central widget with tab interface
         central_widget = QWidget()
@@ -100,6 +111,10 @@ class DoctorWindow(QMainWindow):
         self.setup_patients_tab()
         self.setup_appointments_tab()
         self.setup_prescriptions_tab()
+
+        # Show quick start guide if this is the first login
+        if self.first_login:
+            self.show_quick_start_guide()
 
     def add_sample_appointments(self):
         """Add sample appointments to the dashboard"""
@@ -351,6 +366,62 @@ class DoctorWindow(QMainWindow):
         layout.addWidget(tabs)
 
         details_dialog.exec()
+
+    def show_quick_start_guide(self):
+        """Show the quick start guide for doctors"""
+        guide_dialog = QDialog(self)
+        guide_dialog.setWindowTitle("Doctor Quick Start Guide")
+        guide_dialog.setMinimumSize(800, 600)
+
+        layout = QVBoxLayout(guide_dialog)
+
+        # Create a web view to display the HTML guide
+        web_view = QWebEngineView()
+        guide_path = os.path.abspath("src/frontend/python/resources/doctor_quickstart.html")
+        web_view.load(QUrl.fromLocalFile(guide_path))
+
+        layout.addWidget(web_view)
+
+        # Add a close button
+        close_button = QPushButton("Get Started")
+        close_button.clicked.connect(guide_dialog.accept)
+        layout.addWidget(close_button)
+
+        # Show the dialog
+        guide_dialog.exec()
+
+        # In a real app, we would update user preferences to not show this again
+        self.first_login = False
+        self.statusBar.showMessage("Welcome to MediSys Doctor Dashboard")
+
+    def show_help(self):
+        """Show the comprehensive doctor's guide"""
+        from PySide6.QtWidgets import QMessageBox
+
+        # In a real application, this would open the full documentation
+        # For now, we'll just show the quick start guide again
+
+        # Check if the doctor guide markdown file exists
+        guide_path = os.path.abspath("docs/doctor_guide.md")
+        if os.path.exists(guide_path):
+            # If we have a proper markdown viewer, we would use it here
+            # For now, just show a message with instructions
+            QMessageBox.information(
+                self,
+                "Doctor's Guide",
+                f"The comprehensive doctor's guide is available at:\n{guide_path}\n\n"
+                "For now, we'll show the quick start guide again."
+            )
+            self.show_quick_start_guide()
+        else:
+            # If the guide doesn't exist, just show the quick start guide
+            QMessageBox.information(
+                self,
+                "Help",
+                "The comprehensive doctor's guide is not available.\n"
+                "Showing the quick start guide instead."
+            )
+            self.show_quick_start_guide()
 
     def new_prescription(self):
         """Create a new prescription"""
